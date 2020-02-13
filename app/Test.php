@@ -1,0 +1,14 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Test extends Model
+{
+    protected $table = 'test';
+
+    protected $fillable = [
+        'stuff1', 'stuff2',
+    ];
+}
