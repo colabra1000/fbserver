@@ -29,7 +29,7 @@ Route::get('/getCompetitionsFixtures', 'FbController@getCompetitionsFixtures');
 
 Route::get('/getLeagueTeams', 'FbController@getLeagueTeams');
 
-Route::get('/getMatche', 'FbController@testStuffs');
+Route::get('/geta', 'FbController@testo');
 
 Route::get('/leagueTeam', function(Request $request){
     return response()->json($datum)

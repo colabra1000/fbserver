@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use App\Console\Commands\UpdateAllFixtures;
 
+use App\Http\Resources\Table as TableResource;
+use App\Http\Resources\Team as TeamResource;
+use App\Http\Resources\AllFixture as AllFixtureResource;
+
 class FbController extends Controller
 {
 
@@ -222,6 +226,57 @@ class FbController extends Controller
         return $datum;
     }
 
+    private function getScorers(){
+
+
+        
+         //array for query mass insertion
+         $tableArr = [];
+
+         //loop through the competition and get each table
+         foreach($this->competitions as $competition){  
+
+            //get datum
+            $datum = $this->updateBringer(function($competition){
+
+                $client = new \GuzzleHttp\Client();
+                $response = $client->request('GET', 'https://api.football-data.org/v2/competitions/2002/scorers', ['headers' => [
+                    'X-Auth-token' => '30d8aa28ae5b4a60b541cf3ac0e5b818',
+                    ]
+                ]);
+                return json_decode($response->getBody());
+                
+            }, $competition);
+            
+            foreach($datum as $data){
+        
+                $arr = [];
+                
+                $arr['team_id'] = $data->team->id;
+                $arr['competition_id'] = $competition->id;
+                $arr['numberOfGoals'] = $data->numberOfGoals;
+                $arr['player_id'] = $data->id;
+                $arr['player_name'] = $data->player->id;
+                $arr['player_nationality'] = $data->player->nationality;
+                $arr['player_position'] = $data->player->position;
+                $arr['player_shirtNumber'] = $data->player->shirtNumber;
+               
+                array_push($tableArr, $arr); 
+            }
+
+            sleep(5);
+        }
+ 
+        //clear all data from the database table
+        AllFixture::truncate();
+ 
+        //insert tables to database
+        DB::table('scorers')->insert($tableArr);
+
+        echo "all scorers updated\n";
+      
+    } 
+
     function TodayUpdateDoer(){
 
         $competitionFilter = function($arr){
@@ -267,7 +322,6 @@ class FbController extends Controller
         
         echo "available matches\n";
 
-        die;
 
         while($timeNow < $lastMatchTime){
             echo "long loop\n";
@@ -368,8 +422,27 @@ class FbController extends Controller
       
     }
 
-    function testStuffs(){
-        $this->getTables();       
+    function testo(){
+
+        // $team = Team::all();
+        // return new TeamResource(Team::find(1));
+
+        // $this->getScorers();
+        return 'rob';
+
+        // return AllFixtureResource::collection(AllFixture::where('competition_id', '2002')->get());
+        // return new TableResource(Table::find(1));
+
+
+
+        // $table = Table::find(5);
+        // $team = Team::find(5);
+        // $competition = Competition::find(2002);
+
+        // dd($team->competition);
+
+
+        // $this->getTables();       
     }
 
 }

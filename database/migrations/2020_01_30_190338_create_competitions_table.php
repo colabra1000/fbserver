@@ -29,6 +29,6 @@ class CreateCompetitionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('competitioons');
+        Schema::dropIfExists('competitions');
     }
 }

@@ -43,10 +43,10 @@ class UpdateAllFixtures extends Command
         $this->info('rob vana lastrus tarstagastinvastigalack');
        
         $fbcontroller = new FbController();
-        // $fbcontroller->testStuffs();
+        $fbcontroller->testStuffs();
 
         // $fbcontroller->getCompetitionsFixtures();
-       $fbcontroller->TodayUpdateDoer();
+    //    $fbcontroller->TodayUpdateDoer();
         
     }
 }
