@@ -3,8 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\Team as TeamResource;
-use App\Team;
+
 
 class Table extends JsonResource
 {
@@ -26,8 +25,9 @@ class Table extends JsonResource
             'lost' => $this->lost,
             'points' => $this->points,
             'goalFor' => $this->goalsFor,
-            'team' => $this->team,
-            'competition' => $this->team->competition,
+            'teamCrestUrl' => $this->team->crestUrl,
+            'teamShortName' => $this->team->shortName,
+            'teamName' => $this->team->name,
             'goalAgainst' => $this->goalsAgainst,
             'goalDifference' => $this->goalDifference,
         ];

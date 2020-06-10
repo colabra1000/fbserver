@@ -18,6 +18,7 @@ class CreateScorersTable extends Migration
             $table->string('team_id')->nullable();
             $table->string('numberOfGoals')->nullable();
             $table->string('player_id')->nullable();
+            $table->string('competition_id')->nullable();
             $table->string('player_name')->nullable();
             $table->string('player_nationality')->nullable();
             $table->string('player_position')->nullable();

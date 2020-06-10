@@ -13,7 +13,7 @@ class UpdateAllFixtures extends Command
      *
      * @var string
      */
-    protected $signature = 'fixtures:get';
+    protected $signature = 'match:startUpdate';
 
     /**
      * The console command description.
@@ -43,10 +43,9 @@ class UpdateAllFixtures extends Command
         $this->info('rob vana lastrus tarstagastinvastigalack');
        
         $fbcontroller = new FbController();
-        $fbcontroller->testStuffs();
-
-        // $fbcontroller->getCompetitionsFixtures();
-    //    $fbcontroller->TodayUpdateDoer();
+       
+        $fbcontroller->TodayUpdateDoer();
+        // $fbcontroller->testo();
         
     }
 }
