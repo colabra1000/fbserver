@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Resources\AllFixtures;
 
 class AllFixture extends Model
 {
@@ -16,12 +17,14 @@ class AllFixture extends Model
         return $this->belongsTo('App\Team', 'awayTeam_id');
     }
 
-    // public function match(){
-    //     return $this->belongsTo('App\', 'match_id');
-    // }
-
     public function competition(){
         return $this->belongsTo('App\Competition', 'competition_id');
+    }
+
+    public function currentMatchDay(){
+         
+         $matchDay = AllFixture::where('competition_id', $this->competition_id)->where('status', 'scheduled')->orderBy('match_day')->limit(1)->first();
+         return $matchDay->match_day ;  
     }
 
 }

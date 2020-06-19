@@ -69,8 +69,8 @@ class FbController extends Controller
                     $clientError  = true;
                  }
 
-                 echo "sleepin 10 sec\n"; 
-                 sleep(10);
+                 echo "sleepin 3 sec\n"; 
+                 sleep(3);
  
                 //if upto 5 retries, end
                 if($returnErrorCount >= 5){
@@ -93,11 +93,30 @@ class FbController extends Controller
         //loop through the competition and get each table
         foreach($this->competitions as $competition){
 
+            // $datum = $this->updateBringer(function($competition){
+            //     return Football::getLeagueStandings($competition->id);
+            // }, $competition);
+
+
+            //get datum
             $datum = $this->updateBringer(function($competition){
-                return Football::getLeagueStandings($competition->id);
+
+                $client = new \GuzzleHttp\Client();
+                $response = $client->request('GET', 'https://api.football-data.org/v2/competitions/'.$competition->id.'/standings', ['headers' => [
+                    'X-Auth-token' => '30d8aa28ae5b4a60b541cf3ac0e5b818',
+                    ]
+                ]);
+                return json_decode($response->getBody());
+                
             }, $competition);
 
-            foreach($datum[0]->table as $data){
+            
+            $currentMatchday = $datum->season->currentMatchday;
+            Competition::where('id', $competition->id)->update(['currentMatchDay' => intval($currentMatchday)]);
+
+
+
+            foreach($datum->standings[0]->table as $data){
                 $arr = [];
                 $arr['position'] = $data->position;
                 $arr['team_id'] = $data->team->id;
@@ -220,7 +239,7 @@ class FbController extends Controller
     private function checkForLiveMatches($datum){
        
         $datum = array_filter($datum, function($data){
-            if($data->status == "IN_PLAY"){
+            if($data->status == "IN_PLAY" || $data->status == "PAUSED" ){
                 return true;
             }
         });
@@ -368,6 +387,8 @@ class FbController extends Controller
         //filter the matches by desired competitions.
         $matchesForToday = array_filter($matchesForToday, $competitionFilter);
 
+
+
         //if no matches exists
         if(count($matchesForToday) == 0){
 
@@ -415,7 +436,7 @@ class FbController extends Controller
 
             //start the long loop
             echo "sarting long loop\n";
-            echo ++$counter." loops passed\n";
+            echo ++$counter."long loops passed\n";
 
 
 
@@ -433,31 +454,40 @@ class FbController extends Controller
                 //if it a match is going on
                 if($this->TimeNow() > $timeLowerBoundary && $this->TimeNow() < $timeUpperBoundary){
 
-                    // echo "its match time\n";
-
-               
+                    
 
                     //check if match is live
                     $liveMatches = $this->checkForLiveMatches($matchesForToday);
+
+                    
                     
 
                     //if their are live matches
                     while($liveMatches->isLiveMatchAvailable == true){
 
-                        echo "its match time\n";
+                        echo "live match loop\n";
                         
                         echo ++$counter." loop passed\n";
 
-                        /*get today matches again
-                         $matchesForToday = $this->getTodayMatches();
-                         filter matches
-                         $matchesForToday = array_filter($matchesForToday, $competitionFilter);     
-                         check for live matches again
-                         $liveMatches = $this->checkForLiveMatches($matchesForToday);
-                        */
-
                         
-                        foreach($liveMatches->datum as $dat){
+                        ////
+
+                        // echo ''.count($liveMatches). ' - ' .count($prevLiveMatches);
+
+                        //debug output number of matches in progress
+                        echo count($liveMatches->datum) ." matches in progress\n";
+
+                        //a match has finished or is added
+
+                        //get all matches for today.
+                        $matchesForToday = $this->getTodayMatches();
+
+                        //filter the matches by desired competitions.
+                        $matchesForToday = array_filter($matchesForToday, $competitionFilter);
+
+                        $prevLiveMatches = $this->checkForLiveMatches($matchesForToday);
+
+                        foreach($matchesForToday as $dat){
             
                             $arr = [];
                             $arr['match_id'] = $dat->id;
@@ -475,18 +505,20 @@ class FbController extends Controller
                             
                         }
 
-                        echo "m_database updated\n";                          
+                        echo "m_database updated\n";  
+                        
+                        
 
-                        // echo ''.count($liveMatches). ' - ' .count($prevLiveMatches);
 
-                        //debug output number of matches in progress
-                        echo count($liveMatches->datum) ." matches in progress\n";
 
-                        //a match has finished or is added
-                        $prevLiveMatches = $this->checkForLiveMatches($matchesForToday);
 
-                        //if it their still live matches
-                        if ($prevLiveMatches->isLiveMatchAvailable == true){
+
+
+
+
+
+                        // //if it their still live matches
+                        // if ($prevLiveMatches->isLiveMatchAvailable == true){
                             //if another live match has started or ended.
                             //possible fault: if match starts and end at the same time, then it wound reflect.
                             //hoping that does'nt happen :)
@@ -500,13 +532,16 @@ class FbController extends Controller
                                 echo "sleeping for 6 sec\n";
                                 $this->getScorers();
                             }
-                        }
+                        // }
 
                         //update live matches.
                         $liveMatches->datum = $prevLiveMatches->datum;
                         $liveMatches->isLiveMatchAvailable = $prevLiveMatches->isLiveMatchAvailable;
+                        $liveMatches->countMatches = $prevLiveMatches->countMatches;
 
 
+
+                        
 
                         echo "sleeping for 8 sec\n"; 
                         sleep(8);
@@ -558,25 +593,22 @@ class FbController extends Controller
       
     // }
 
+    function tt(){
+       
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request('GET', 'https://api.football-data.org/v2/competitions/2014/standings', ['headers' => [
+                'X-Auth-token' => '30d8aa28ae5b4a60b541cf3ac0e5b818',
+                ]
+            ]);
+            return json_decode($response->getBody());
+            
+       
+    
+    }
+
     function testo(){
-
-        echo "MyTestTo\n";
-        $counter = 0;
-
-        $obj = new \stdClass();
-
-        $obj->booleanan = true;
-        $booleanan = true;
-
-        while($booleanan == true){
-            $counter ++;
-            echo $counter." looping\n";
-            sleep(3);
-            if($counter == 3){
-                
-                $booleanan = false;
-                echo "end loop\n";
-            }
+            dd($this->getTables());
+       
         }
 
 
@@ -612,6 +644,6 @@ class FbController extends Controller
 
 
         // $this->getTables();       
-    }
+    // }
 
 }

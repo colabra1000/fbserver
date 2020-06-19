@@ -3,6 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\AllFixture as AllFixtureResource;
+
+
 
 class AllFixture extends JsonResource
 {
@@ -14,10 +17,11 @@ class AllFixture extends JsonResource
      */
     public function toArray($request)
     {
-        // return parent::toArray($request);
+ 
         return [
             'id' => $this->id,
-            'match_day' => $this->match_day,
+            'currentMatchDay' => $this->competition->currentMatchDay,
+            'matchDay' => $this->match_day,
             'status' => $this->status,
             'utcDate' => $this->utcDate,
             'lastUpdated' => $this->lastUpdated,
@@ -25,7 +29,6 @@ class AllFixture extends JsonResource
             'awayScore' => $this->awayScore,
             'homeTeam' => $this->homeTeam->shortName,
             'awayTeam' => $this->awayTeam->shortName,
-            'competition' => $this->competition,
             'venue' => $this->homeTeam->venue,
         ];
     }

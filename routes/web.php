@@ -1,6 +1,9 @@
 <?php
 
 use App\Scorer;
+use App\Team;
+use App\Http\Controllers\FbController;
+use App\Http\Resources\Team as TeamResource;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,7 +15,18 @@ use App\Scorer;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/welcome', function () {
+    return 'rob';
+});
+
+Route::get('/team/{id}', function ($id) {
+    
+    return TeamResource::collection(Team::find($id));
+});
+
+Route::get('/test1', function(){
+    // $fbController = new FbController;
+    // return $fbController->testo();
+    // return 
 });
 
