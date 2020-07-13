@@ -36,14 +36,26 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::get('/fixtures/{matchDay}/{competitionId}', function($matchDay, $competitionId){
+Route::get("/fixtures/live", function(){
 
-
-    // $matchDay = AllFixture::where('competition_id', $competitionId)->first()->matchDay();
-    return AllFixtureResource::collection(Allfixture::where('competition_id', $competitionId)->where('match_day', $matchDay)->orderBy('utcDate')->get());
-   
+    return AllFixtureResource::collection(Allfixture::where('status', 'in_play')->orWhere('status', 'paused')->orderBy('competition_id')->orderBy('utcDate')->get());
 
 });
+Route::get('/fixtures/today/{competitionId}', function($competitionId){
+
+
+    $currentMatchDay = Competition::where('id', $competitionId)->first()->currentMatchDay;
+    
+    return AllFixtureResource::collection(Allfixture::where('competition_id', $competitionId)->where('match_day', $currentMatchDay)->orderBy('utcDate')->get());
+
+});
+Route::get('/fixtures/{matchDay}/{competitionId}', function($matchDay, $competitionId){
+
+    
+    return AllFixtureResource::collection(Allfixture::where('competition_id', $competitionId)->where('match_day', $matchDay)->orderBy('utcDate')->get());
+
+});
+
 
 
 Route::get('/scorers/{competitionId}', function($competitionId){
@@ -55,34 +67,18 @@ Route::get('/tables/{competitionId}', function($competitionId){
     return TableResource::collection(Table::where('competition_id', $competitionId)->get());
 });
 
+Route::get('/teams/single/{teamId}', function($teamId){
+    return TeamResource::collection(Team::where('id', $teamId)->get());
+});
+
 Route::get('/teams/{competitionId}', function($competitionId){
     return TeamResource::collection(Team::where('competition_id', $competitionId)->get());
 });
 
-// Route::get('/allfixtures/{competitionId}', function($competitionId){
-//     return AllFixtureResource::collection(Allfixture::where('competition_id', $competitionId)->get());
-// });
 
-// Route::get('/fixtures/{matchDay}/{competitionId}', function($competitionId, $matchDay){
 
-//     // $matchDay = AllFixture::where('competition_id', $competitionId)->first()->matchDay();
-//     return AllFixtureResource::collection(Allfixture::where('competition_id', $competitionId)->where('match_day', $matchDay)->orderBy('utcDate')->get());
 
-// });
 
-Route::get('/todayfixtures/{competitionId}', function($competitionId){
-
-    // $currentMatchDay = AllFixture::where('competition_id', $competitionId)->first()->currentMatchDay();
-    $currentMatchDay = Competition::where('id', $competitionId)->first()->currentMatchDay;
-    return AllFixtureResource::collection(Allfixture::where('competition_id', $competitionId)->where('match_day', $currentMatchDay)->orderBy('utcDate')->get());
-
-});
-
-Route::get("/allfixtureslive", function(){
-
-    return AllFixtureResource::collection(Allfixture::where('status', 'live')->orWhere('status', 'live')->orderBy('competition_id')->orderBy('utcDate')->get());
-
-});
 
 Route::get('/test/{id}', function($id){
     return new TeamResource(Team::find($id));

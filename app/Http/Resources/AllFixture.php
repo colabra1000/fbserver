@@ -30,6 +30,7 @@ class AllFixture extends JsonResource
             'homeTeam' => $this->homeTeam->shortName,
             'awayTeam' => $this->awayTeam->shortName,
             'venue' => $this->homeTeam->venue,
+            'competitionName' => $this->competition->name
         ];
     }
 }

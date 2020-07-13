@@ -12,6 +12,7 @@ use Football;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use App\Console\Commands\UpdateAllFixtures;
+use App\Http\Controllers\UpdateBringer;
 
 use App\Http\Resources\Table as TableResource;
 use App\Http\Resources\Team as TeamResource;
@@ -99,7 +100,17 @@ class FbController extends Controller
 
 
             //get datum
-            $datum = $this->updateBringer(function($competition){
+            // $datum = $this->updateBringer(function($competition){
+
+            //     $client = new \GuzzleHttp\Client();
+            //     $response = $client->request('GET', 'https://api.football-data.org/v2/competitions/'.$competition->id.'/standings', ['headers' => [
+            //         'X-Auth-token' => '30d8aa28ae5b4a60b541cf3ac0e5b818',
+            //         ]
+            //     ]);
+            //     return json_decode($response->getBody());
+                
+            // }, $competition);
+            $datum = UpdateBringer::updateBring(function($competition){
 
                 $client = new \GuzzleHttp\Client();
                 $response = $client->request('GET', 'https://api.football-data.org/v2/competitions/'.$competition->id.'/standings', ['headers' => [

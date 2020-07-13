@@ -30,6 +30,7 @@ class Table extends JsonResource
             'teamName' => $this->team->name,
             'goalAgainst' => $this->goalsAgainst,
             'goalDifference' => $this->goalDifference,
+            'competition_id' => $this->competition_id
         ];
     }
 }

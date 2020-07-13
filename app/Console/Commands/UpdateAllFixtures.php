@@ -44,8 +44,8 @@ class UpdateAllFixtures extends Command
        
         $fbcontroller = new FbController();
        
-        $fbcontroller->TodayUpdateDoer();
-        // $fbcontroller->testo();
+        // $fbcontroller->TodayUpdateDoer();
+        $fbcontroller->testo();
         
     }
 }
