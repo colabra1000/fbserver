@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Http\Controllers\FbController;
+use App\Http\Controllers\UpdateB;
+
 
 
 class UpdateAllFixtures extends Command
@@ -41,11 +43,12 @@ class UpdateAllFixtures extends Command
     {
 
         $this->info('rob vana lastrus tarstagastinvastigalack');
-       
-        $fbcontroller = new FbController();
-       
+        // $fbcontroller = new FbController();
         // $fbcontroller->TodayUpdateDoer();
-        $fbcontroller->testo();
+        // $fbcontroller->testo();
+        // $fbcontroller->putUpToDate();
+        $updateB = new UpdateB();
+        $updateB->testor();
         
     }
 }

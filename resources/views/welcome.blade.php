@@ -96,5 +96,17 @@
                 </div>
             </div>
         </div>
+
+            <script src="/js/app.js"></script>
+
+            <script>
+                console.log('nalaj');
+                Echo.channel('test-channel')
+                .listen('TestEvent', (e) => {
+                    console.log(e);
+                });
+
+            </script>
+
     </body>
 </html>

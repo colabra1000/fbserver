@@ -16,7 +16,7 @@ use App\Http\Resources\Team as TeamResource;
 */
 
 Route::get('/welcome', function () {
-    return 'rob';
+    return view('welcome');
 });
 
 Route::get('/team/{id}', function ($id) {

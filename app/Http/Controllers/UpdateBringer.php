@@ -22,12 +22,12 @@ class UpdateBringer extends Controller{
                     }catch(\GuzzleHttp\Exception\ConnectException $e){
 
                     
-                        echo "cant update table\n";
+                        echo "cant update \n";
                         $clientError = true;
                     
                     }catch(\GuzzleHttp\Exception\ClientException $e){
     
-                        echo "cant update table\n";    
+                        echo "cant update \n";    
                         $clientError  = true;
 
                     }catch(\GuzzleHttp\Exception\RequestException $e){
@@ -35,7 +35,7 @@ class UpdateBringer extends Controller{
                         $clientError  = true;
                     }
 
-                    echo "sleepin 3 sec\n"; 
+                    // echo "sleepin 3 sec\n"; 
                     sleep(3);
     
                     //if upto 5 retries, end

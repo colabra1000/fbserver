@@ -13,7 +13,8 @@
         "grambas/football-data": "dev-master",
         "guzzlehttp/guzzle": "^6.5",
         "laravel/framework": "^6.2",
-        "laravel/tinker": "^2.0"
+        "laravel/tinker": "^2.0",
+        "pusher/pusher-php-server": "^4.1"
     },
     "require-dev": {
         "facade/ignition": "^1.4",
