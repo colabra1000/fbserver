@@ -28,78 +28,23 @@ class FbController extends Controller
     
 
     function __construct(){
-
         $this->fetcher = new Fetcher();
-      
-        //get saved competition from model
         $this->competitions = Competition::all();
-
     }
 
     function getTodayDate(){
         return date('Y-m-d', strtotime(now()));
     }
 
-    //check for live matches
-    // private function checkForLiveMatches($datum){
-       
-    //     $datum = array_filter($datum, function($data){
-    //         if($data->status == "IN_PLAY" || $data->status == "PAUSED" ){
-    //             return true;
-    //         }
-    //     });
-
-        // return false;
-
-        //create a class to return;
-        // $obj = new \stdClass();
-        
-        //if their are any..
-        // if (count($datum) > 0){
-
-        //     return $datum;
-
-            // $obj->isLiveMatchAvailable = true;
-            // $obj->datum = $datum;
-            // $obj->countMatches = count($datum);
-
-            // return $obj;             
-            
-        // }
-
-        // return null;
-
-        //else
-        
-    //         $obj->isLiveMatchAvailable = false;
-    //         $obj->datum = null;
-    //         $obj->countMatches = 0;
-
-    //         return $obj;    
-        
-    // }
-
-
-
-
-
-    private function checkForLiveMatches($datum){
-       
-
+    private function checkIfMatchIsInProgress($datum){
         foreach($datum as $data){
             if($data->status == "IN_PLAY" || $data->status == "PAUSED" ){
                 return true;
             }
         }
-
         return false;
-
     }
 
-
-
-
-   
 
     //get matches for the day
     private function getTodayMatches(){
@@ -108,18 +53,16 @@ class FbController extends Controller
         $datum = UpdateBringer::updateBring(function(){
             return Football::getMatches(['competitions' => '', 'dateFrom' => $this->getTodayDate(), 'dateTo' => $this->getTodayDate()])->toArray();
         });
-       
         return $datum;
     }
 
 
     //get current time
-    function TimeNow(){
+    function getTimeNow(){
         return strtotime(now());
     }
 
     function getAndFilterMatchesForToday(){
-
         $competitionFilter = function($arr){
             foreach($this->competitions as $competition){
                 if($competition->id == $arr->competition->id){
@@ -128,28 +71,15 @@ class FbController extends Controller
             }    
         };  
          //get all matches for today.
-         $matchesForToday = $this->getTodayMatches();
+         $matchesForTodayObj = $this->getTodayMatches();
 
          //filter the matches by desired competitions.
-         return array_filter($matchesForToday, $competitionFilter);
+         return array_filter($matchesForTodayObj, $competitionFilter);
     }
 
 
     //Main function that calls other functions
     function TodayUpdateDoer(){
-
-        //filter competitions by id.
-        // $competitionFilter = function($arr){
-        //     foreach($this->competitions as $competition){
-        //         if($competition->id == $arr->competition->id){
-        //             return true;
-        //         }
-        //     }    
-        // };  
-        
-
-        //to be put in a job;
-       
         
         // if their are no fixtures in database then fetch features.
         if(AllFixture::all()->isEmpty()){
@@ -181,10 +111,10 @@ class FbController extends Controller
         //duration of match
         $matchOffsetTime = '+180 minutes';
 
-        $matchesForToday = $this->getAndFilterMatchesForToday();
+        $matchesForTodayObj = $this->getAndFilterMatchesForToday();
 
         //if no matches exists
-        if(count($matchesForToday) == 0){
+        if(count($matchesForTodayObj) == 0){
 
             echo "No available Matches\n";
 
@@ -216,7 +146,7 @@ class FbController extends Controller
         //else if their are matches for the day...
 
         //get the last match for the day.
-        $lastMatch = end($matchesForToday);
+        $lastMatch = end($matchesForTodayObj);
 
         //get time match ends for the day.
         $lastMatchTime = strtotime($matchOffsetTime, strtotime($lastMatch->utcDate));
@@ -226,7 +156,7 @@ class FbController extends Controller
         echo "available matches\n";
 
         //while the last match for the day has not been played..
-        while($this->TimeNow() < $lastMatchTime){
+        while($this->getTimeNow() < $lastMatchTime){
 
             //start the long loop
             echo "sarting long loop\n";
@@ -237,7 +167,7 @@ class FbController extends Controller
 
 
             //loop through each match and check match time
-            foreach($matchesForToday as $data){
+            foreach($matchesForTodayObj as $data){
 
                 //match time + match offset time; time to complete a match.
                 $timeUpperBoundary = strtotime($matchOffsetTime, strtotime($data->utcDate));
@@ -245,21 +175,17 @@ class FbController extends Controller
                 $timeLowerBoundary = strtotime($data->utcDate);
 
                 //if it a match is going on
-                if($this->TimeNow() > $timeLowerBoundary && $this->TimeNow() < $timeUpperBoundary){
+                if($this->getTimeNow() > $timeLowerBoundary && $this->getTimeNow() < $timeUpperBoundary){
 
                     
 
                     //check if match is live
-                    $liveMatches = $this->checkForLiveMatches($matchesForToday);
+                    $liveMatches = $this->checkIfMatchIsInProgress($matchesForTodayObj);
 
                     
                     $matchesForTodayArr_prev = [];
 
                     
-
-                    //if their are live matches
-                    // while($liveMatches->isLiveMatchAvailable == true){
-
                         $tableArr_prev = [];
                         $scorersArr_prev = [];
                     
@@ -274,11 +200,11 @@ class FbController extends Controller
 
                         $matchesForToday = $this->getAndFilterMatchesForToday();
 
-                        // $prevLiveMatches = $this->checkForLiveMatches($matchesForToday);
+                        // $prevLiveMatches = $this->checkIfMatchIsInProgress($matchesForToday);
                         $matchesForTodayArr = [];
                         
                         
-                        foreach($matchesForToday as $dat){
+                        foreach($matchesForTodayObj as $dat){
             
                             $arr = [];
                             $arr['match_id'] = $dat->id;
@@ -314,7 +240,7 @@ class FbController extends Controller
                             $tableArr_prev = $fetcheObject->getArr();
                             if($fetcheObject->hasArrayChanged()){
                                 
-                                sleep(6);
+                                sleep(2);
                                 echo "table database updated\n";
                                 //update the database;
                                 Table::truncate();
@@ -330,7 +256,7 @@ class FbController extends Controller
                             if($fetcheObject->hasArrayChanged()){
                                 
 
-                                sleep(6);
+                                sleep(2);
                                 echo "scorers database updated\n";
                                 // $this->fetcher->getScorers();
 
@@ -349,31 +275,8 @@ class FbController extends Controller
                         $matchesForTodayArr_prev = $matchesForTodayArr;
 
 
-                        //if another live match has started or ended.
-                            //possible fault: if match starts and end at the same time, then it wouldnt reflect.
-                            //hoping that does'nt happen :)
-                            // if($this->fetcher->comparor($liveMatches, $prevLiveMatches)){
-                            // if($liveMatches->countMatches != $prevLiveMatches->countMatches){
-                            //     //update tables and scorers
-                            //     sleep(6);
-                            //     echo "sleeping for 6 sec\n";
-                            //     $this->fetcher->getTables();
-    
-                            //     sleep(6);
-                            //     echo "sleeping for 6 sec\n";
-                            //     $this->fetcher->getScorers();
-                            // }
-                        // }
-
-
-                        // $liveMatches = $prevLiveMatches;
-                        //update live matches.
-                        // $liveMatches->datum = $prevLiveMatches->datum;
-                        // $liveMatches->isLiveMatchAvailable = $prevLiveMatches->isLiveMatchAvailable;
-                        // $liveMatches->countMatches = $prevLiveMatches->countMatches;
-
-                        echo "sleeping for 8 sec\n"; 
-                        sleep(8);
+                        echo "sleeping for 16 sec\n"; 
+                        sleep(16);
                         //end of loop for checking for live matches.
                     }
                 }

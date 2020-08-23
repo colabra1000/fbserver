@@ -101,8 +101,23 @@
 
             <script>
                 console.log('nalaj');
-                Echo.channel('test-channel')
-                .listen('TestEvent', (e) => {
+                Echo.channel('scorers')
+                .listen('UpdateNotice', (e) => {
+                    console.log(e);
+                });
+
+                Echo.channel('tables')
+                .listen('UpdateNotice', (e) => {
+                    console.log(e);
+                });
+
+                Echo.channel('all_fixtures')
+                .listen('UpdateNotice', (e) => {
+                    console.log(e);
+                });
+
+                Echo.channel('teams')
+                .listen('UpdateNotice', (e) => {
                     console.log(e);
                 });
 

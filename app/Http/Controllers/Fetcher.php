@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use App\Console\Commands\UpdateAllFixtures;
 use App\Http\Controllers\UpdateBringer;
+use App\Events\UpdateNotice;
 
 class Fetcher extends Controller
 {
@@ -69,7 +70,7 @@ class Fetcher extends Controller
 
     function getTables($prev_arr = [], $updateDatabase = true){
 
-        echo('starting league tables update/n');
+        echo("starting league tables update\n");
         //array for query mass insertion
         $tableArr = [];
 
@@ -114,11 +115,19 @@ class Fetcher extends Controller
 
         }
 
-        if($updateDatabase){   
-            Table::truncate();
-            DB::table('tables')->insert($tableArr);
-            echo "tables has been updated\n";
-       }
+        $this->updater($tableArr, $updateDatabase, Table::class, 'tables');
+
+        // if($tableArr != []){
+        //     if($updateDatabase){   
+        //         Table::truncate();
+        //         DB::table('tables')->insert($tableArr);
+        //         echo "tables has been updated\n";
+        //    }
+        // }else{
+        //     echo "empty Array Returned\n";
+        // }
+
+        
 
        $status = $this->comparor($prev_arr, $tableArr, 'team_id');
        return new Returner($tableArr, !$status);
@@ -158,13 +167,13 @@ class Fetcher extends Controller
            
         }
 
-        if($updateDatabase){   
-    
-        AllFixture::truncate();
-        DB::table('all_fixtures')->insert($tableArr);
-       }
+        $this->updater($tableArr, $updateDatabase, AllFixture::class, 'all_fixtures');
 
-       echo "all competitions fixtures updated\n";
+    //     if($updateDatabase){   
+    
+    //     AllFixture::truncate();
+    //     DB::table('all_fixtures')->insert($tableArr);
+    //    }
 
        $status = $this->comparor($prev_arr, $tableArr, 'match_id');
        return new Returner($tableArr, !$status);
@@ -174,6 +183,8 @@ class Fetcher extends Controller
 
     function getScorers($prev_arr = [], $updateDatabase = true){
 
+        
+
         echo("starting league scorers update\n");
         
         //array for query mass insertion
@@ -181,6 +192,10 @@ class Fetcher extends Controller
 
         //loop through the competition and get each table
         foreach($this->competitions as $competition){  
+
+            if($competition->id != 2021){
+                continue;
+            }
 
            //get datum
            $datum = UpdateBringer::updateBring(function($competition){
@@ -215,12 +230,14 @@ class Fetcher extends Controller
        }
 
 
-       if($updateDatabase){   
+       $this->updater($tableArr, $updateDatabase, Scorer::class, 'scorers');
+
+    //    if($updateDatabase){   
            
-            Scorer::truncate();
-            DB::table('scorers')->insert($tableArr);
-            echo "Scorers database updated\n";
-       }
+    //         Scorer::truncate();
+    //         DB::table('scorers')->insert($tableArr);
+    //         echo "Scorers database updated\n";
+    //    }
 
        $status = $this->comparor($prev_arr, $tableArr, 'player_id');
        return new Returner($tableArr, !$status);
@@ -228,7 +245,7 @@ class Fetcher extends Controller
     
     function getLeagueTeams($prev_arr = [], $updateDatabase = true){
 
-        echo "fetching league scorers\n";
+        echo "fetching league Teams\n";
         //get all competition
         //array for query mass insertion
         $tableArr = [];
@@ -236,7 +253,6 @@ class Fetcher extends Controller
         //loop through the competition and get each table
         foreach($this->competitions as $competition){
           
-            echo("starting league Teams Update");
             //fetch teams from API
             $datum = UpdateBringer::updateBring(function($competition){
                 return Football::getLeagueTeams($competition->id);
@@ -263,11 +279,13 @@ class Fetcher extends Controller
             $this->notifier($competition->name);
         }
 
-        if($updateDatabase){   
-            Team::truncate();
-            DB::table('teams')->insert($tableArr);
-            echo "Teams database updated\n";
-       }
+        $this->updater($tableArr, $updateDatabase, Team::class, 'teams');
+
+    //     if($updateDatabase){   
+    //         Team::truncate();
+    //         DB::table('teams')->insert($tableArr);
+    //         echo "Teams database updated\n";
+    //    }
 
        $status = $this->comparor($prev_arr, $tableArr, 'id');
        return new Returner($tableArr, !$status);      
@@ -278,6 +296,24 @@ class Fetcher extends Controller
         echo $competitionName. " has been queued\n\n";
         sleep(5);
     }
+
+    function updater($tableArr, $updateDatabase, $model, $modelName){
+        if($tableArr != []){
+            if($updateDatabase){   
+
+                $model::truncate();
+                DB::table($modelName)->insert($tableArr);
+
+                event(new UpdateNotice($modelName));
+
+                echo $modelName." has been updated\n";
+           }
+        }else{
+            echo "empty Array Returned\n";
+        }
+    }
+
+   
 
 }
 

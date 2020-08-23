@@ -35,8 +35,8 @@ class UpdateBringer extends Controller{
                         $clientError  = true;
                     }
 
-                    // echo "sleepin 3 sec\n"; 
-                    sleep(3);
+                    // echo "sleepin 6 sec\n"; 
+                    sleep(6);
     
                     //if upto 5 retries, end
                     if($returnErrorCount >= 5){

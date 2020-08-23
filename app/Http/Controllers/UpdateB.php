@@ -129,7 +129,60 @@ class UpdateB extends Controller
 
     }
 
+
+    public function testor4($competition){
+
+        $fetcher = new Fetcher();
+        $fetcher->getScorers([], false);
+        // $ra = $competition::where('id', 2002)->get();
+        // echo $ra;
+    }
+
+
     public function testEvent(){
         event(new TestEvent("Robson kat"));
     }
 }
+
+// DB::beginTransaction();
+//      // do all your updates here
+//         foreach ($users as $user) {
+//             $new_value = rand(1,10) // use your own criteria
+//             DB::table('users')
+//                ->where('id', '=', $user->id)
+//                ->update(['status' => $new_value  // update your field(s) here
+//                 ]);
+//         }
+//     // when done commit
+// DB::commit();
+
+
+// public function regenerateDescendantsSlugs(Model $parent, $old_parent_slug)
+//     {
+//         $children = $parent->where('full_slug', 'like', "%/$old_parent_slug/%")->get();
+
+//         \DB::transaction(function () use ($children, $parent, $old_parent_slug) {
+//             /** @var Model $child */
+//             foreach ($children as $child) {
+//                 $new_full_slug  = $this->regenerateSlug($parent, $child);
+//                 $new_full_title = $this->regenerateTitle($parent, $child);
+
+//                 \DB::table($parent->getTable())
+//                     ->where('full_slug', '=', $child->full_slug)
+//                     ->update([
+//                         'full_slug' => $new_full_slug,
+//                         'full_title' => $new_full_title,
+//                     ]);
+//             }
+//         });
+//     }
+
+       // DB::BeginTransaction();
+
+                // foreach($tableArr as $arr){
+                //     DB::table($modelName)
+                //     ->where($comparor, '=', $comparee)
+                //     ->update($arr);
+                // }
+
+                // DB::commit();
