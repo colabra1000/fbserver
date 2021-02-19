@@ -193,9 +193,9 @@ class Fetcher extends Controller
         //loop through the competition and get each table
         foreach($this->competitions as $competition){  
 
-            if($competition->id != 2021){
-                continue;
-            }
+            // if($competition->id != 2021){
+            //     continue;
+            // }
 
            //get datum
            $datum = UpdateBringer::updateBring(function($competition){

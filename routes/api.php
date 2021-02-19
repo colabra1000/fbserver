@@ -20,6 +20,9 @@ use App\Team;
 use App\Http\Resources\AllFixture as AllFixtureResource;
 use App\AllFixture;
 
+
+use App\Http\Controllers\FbController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -75,6 +78,10 @@ Route::get('/teams/{competitionId}', function($competitionId){
     return TeamResource::collection(Team::where('competition_id', $competitionId)->get());
 });
 
+Route::get('/matches/{teamId}', function($teamId){
+    return AllFixtureResource::collection(allFixture::where('homeTeam_id', $teamId)->orWhere('awayTeam_id', $teamId)->get());
+});
+
 
 
 
@@ -82,6 +89,12 @@ Route::get('/teams/{competitionId}', function($competitionId){
 
 Route::get('/test/{id}', function($id){
     return new TeamResource(Team::find($id));
+});
+
+
+Route::get('/testeverything', function(){
+    $fbc = new FbController();
+    return $fbc->initializeEverything();
 });
 
 

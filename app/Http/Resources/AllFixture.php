@@ -27,6 +27,8 @@ class AllFixture extends JsonResource
             'lastUpdated' => $this->lastUpdated,
             'homeScore' => $this->homeScore,
             'awayScore' => $this->awayScore,
+            'awayTeamCrestUrl' => $this->awayTeam->crestUrl,
+            'homeTeamCrestUrl' => $this->homeTeam->crestUrl,
             'homeTeam' => $this->homeTeam->shortName,
             'awayTeam' => $this->awayTeam->shortName,
             'venue' => $this->homeTeam->venue,

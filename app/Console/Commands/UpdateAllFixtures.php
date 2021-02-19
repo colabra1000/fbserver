@@ -46,6 +46,7 @@ class UpdateAllFixtures extends Command
         $this->info('rob vana lastrus tarstagastinvastigalack');
         $fbcontroller = new FbController();
         $fbcontroller->TodayUpdateDoer();
+
         // $fbcontroller->testo();
         // $fbcontroller->putUpToDate();
         // $updateB = new UpdateB();

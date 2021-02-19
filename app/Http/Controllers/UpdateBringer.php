@@ -22,15 +22,18 @@ class UpdateBringer extends Controller{
                     }catch(\GuzzleHttp\Exception\ConnectException $e){
 
                     
-                        echo "cant update \n";
+                        echo "cant update0 \n";
+                      
                         $clientError = true;
                     
                     }catch(\GuzzleHttp\Exception\ClientException $e){
     
-                        echo "cant update \n";    
+                        echo "cant update1 \n"; 
+                       
                         $clientError  = true;
 
                     }catch(\GuzzleHttp\Exception\RequestException $e){
+                        echo($e."\n");
                         echo "this unknown curl error\n";    
                         $clientError  = true;
                     }

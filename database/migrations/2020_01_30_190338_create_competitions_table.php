@@ -16,6 +16,7 @@ class CreateCompetitionsTable extends Migration
         Schema::create('competitions', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->unique()->index();
             $table->string('name');
+            $table->integer('currentMatchDay');
             $table->string('emblemUrl')->nullable();
             $table->timestamps();
             

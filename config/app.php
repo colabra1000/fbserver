@@ -163,6 +163,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         Grambas\FootballData\FootballDataServiceProvider::class,
 
+
         /*
          * Package Service Providers...
          */
@@ -227,7 +228,6 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Football' => Grambas\FootballData\Facades\FootballDataFacade::class,
-
     ],
 
 ];

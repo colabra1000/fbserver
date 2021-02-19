@@ -14,7 +14,8 @@
         "guzzlehttp/guzzle": "^6.5",
         "laravel/framework": "^6.2",
         "laravel/tinker": "^2.0",
-        "pusher/pusher-php-server": "^4.1"
+        "pusher/pusher-php-server": "^4.1",
+        "that0n3guy/transliteration": "^2.0"
     },
     "require-dev": {
         "facade/ignition": "^1.4",
